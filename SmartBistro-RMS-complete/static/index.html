@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartBistro RMS</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Restaurant Management System</p>
+      <h1>SmartBistro</h1>
+    </div>
+    <form id="loginForm" class="login">
+      <input name="email" value="manager@smartbistro.test" aria-label="Email">
+      <input name="password" type="password" value="manager123" aria-label="Password">
+      <button type="submit">Sign in</button>
+      <span id="loginState">Guest mode</span>
+    </form>
+  </header>
+
+  <nav class="tabs" aria-label="Workspace">
+    <button data-view="home" class="active">Home</button>
+    <button data-view="guest">Guest Menu</button>
+    <button data-view="floor">Floor Plan</button>
+    <button data-view="kds">Kitchen Display</button>
+    <button data-view="orders">Orders</button>
+    <button data-view="menuAdmin">Menu Admin</button>
+    <button data-view="inventory">Inventory</button>
+    <button data-view="analytics">Analytics</button>
+  </nav>
+
+  <main>
+    <section id="home" class="view active">
+      <div class="home-hero">
+        <div class="hero-copy">
+          <p class="eyebrow">SmartBistro RMS</p>
+          <h2>One restaurant system for guests, staff, kitchen, stock, and managers.</h2>
+          <p>Take table orders, move dockets through the kitchen, track ingredients, and view daily performance from one browser-based workspace.</p>
+          <div class="hero-actions">
+            <button data-jump="guest" class="primary">Start table order</button>
+            <button data-jump="kds">Open kitchen display</button>
+          </div>
+        </div>
+      </div>
+      <div class="home-grid">
+        <article class="feature-card">
+          <h3>Guest Ordering</h3>
+          <p>Mobile-friendly table menus, checkout, receipts, and loyalty points.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Kitchen Display</h3>
+          <p>Live order cards with prep timing, dietary notes, and status controls.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Inventory</h3>
+          <p>Recipe-based ingredient deduction, waste logs, and low-stock alerts.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Analytics</h3>
+          <p>Revenue, average order value, top dishes, and exportable reports.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="guest" class="view">
+      <div class="split">
+        <section>
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Table ordering</p>
+              <h2 id="menuTitle">Table 1 menu</h2>
+            </div>
+            <select id="tableSelect" aria-label="Choose table"></select>
+          </div>
+          <div id="menuGrid" class="menu-grid"></div>
+        </section>
+        <aside class="panel order-panel">
+          <h2>Current Order</h2>
+          <div id="cartItems" class="cart-empty">No items yet.</div>
+          <label>Name <input id="customerName" value="Alex Guest"></label>
+          <label>Email or phone <input id="customerContact" value="alex@example.com"></label>
+          <div class="loyalty-box">
+            <span>Loyalty balance</span>
+            <strong id="loyaltyBalance">0 pts</strong>
+            <button id="checkLoyalty" type="button">Check balance</button>
+          </div>
+          <label>Loyalty points to redeem <input id="redeemPoints" type="number" min="0" value="0"></label>
+          <div class="total-row"><span>Total</span><strong id="cartTotal">$0.00</strong></div>
+          <button id="submitOrder" class="primary">Pay and send to kitchen</button>
+          <p id="orderResult" class="muted"></p>
+          <div id="receiptPanel" class="receipt-panel hidden"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="floor" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">Front of house</p>
+          <h2>Interactive Floor Plan</h2>
+        </div>
+        <button id="refreshTables">Refresh</button>
+      </div>
+      <div id="floorGrid" class="floor-grid"></div>
+    </section>
+
+    <section id="kds" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">Back of house</p>
+          <h2>Kitchen Display System</h2>
+        </div>
+        <button id="refreshKds">Refresh</button>
+      </div>
+      <div id="kdsGrid" class="kds-grid"></div>
+    </section>
+
+    <section id="inventory" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">Stock control</p>
+          <h2>Inventory and Waste</h2>
+        </div>
+        <button id="refreshInventory">Refresh</button>
+      </div>
+      <div class="split">
+        <div id="inventoryList" class="inventory-list"></div>
+        <aside class="panel">
+          <h2>Waste Log</h2>
+          <label>Ingredient <select id="wasteIngredient"></select></label>
+          <label>Quantity <input id="wasteQty" type="number" min="0" step="1" value="50"></label>
+          <label>Reason <input id="wasteReason" value="spoilage"></label>
+          <button id="logWaste">Record waste</button>
+          <h2>Alerts</h2>
+          <div id="alerts"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="orders" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">Service record</p>
+          <h2>Order History</h2>
+        </div>
+        <button id="refreshOrders">Refresh</button>
+      </div>
+      <div id="ordersList" class="orders-list"></div>
+    </section>
+
+    <section id="menuAdmin" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">Manager tools</p>
+          <h2>Menu Management</h2>
+        </div>
+        <button id="newMenuItem">New item</button>
+      </div>
+      <div class="split">
+        <div id="menuAdminList" class="menu-admin-list"></div>
+        <aside class="panel">
+          <h2 id="menuFormTitle">Edit Menu Item</h2>
+          <input id="menuItemId" type="hidden">
+          <label>Name <input id="menuName"></label>
+          <label>Category <input id="menuCategory"></label>
+          <label>Description <input id="menuDescription"></label>
+          <label>Price <input id="menuPrice" type="number" min="0" step="0.01"></label>
+          <label>Prep minutes <input id="menuPrep" type="number" min="1" step="1"></label>
+          <label>Allergens <input id="menuAllergens" placeholder="gluten,dairy"></label>
+          <label>Dietary tags <input id="menuDietary" placeholder="vegetarian,vegan"></label>
+          <label>Image path
+            <select id="menuImage">
+              <option value="/assets/pizza.png">Pizza</option>
+              <option value="/assets/pasta.png">Pasta</option>
+              <option value="/assets/burger.png">Burger</option>
+              <option value="/assets/salmon.png">Salmon</option>
+              <option value="/assets/salad.png">Salad</option>
+              <option value="/assets/coffee.png">Coffee</option>
+            </select>
+          </label>
+          <button id="saveMenuItem" class="primary">Save menu item</button>
+          <button id="deleteMenuItem" type="button">Delete item</button>
+          <p id="menuAdminMessage" class="muted"></p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="analytics" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">Management</p>
+          <h2>Analytics Dashboard</h2>
+        </div>
+        <a class="button" href="/api/reports/weekly?format=csv" id="csvLink">Export CSV</a>
+      </div>
+      <div id="summaryCards" class="summary-grid"></div>
+      <div class="split">
+        <section class="panel">
+          <h2>Revenue Trend</h2>
+          <div id="revenueBars" class="bars"></div>
+        </section>
+        <section class="panel">
+          <h2>Top Dishes</h2>
+          <div id="topDishes"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
