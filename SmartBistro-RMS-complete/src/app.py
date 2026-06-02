@@ -253,6 +253,10 @@ class SmartBistroService:
             "user": row_to_dict(user, exclude={"password_hash"}),
         }
 
+    def logout(self) -> dict[str, Any]:
+        """Logout endpoint - server-side session termination (optional)."""
+        return {"ok": True, "message": "Logged out successfully"}
+
     def require_user(self, auth_header: str | None, roles: tuple[str, ...] = ()) -> dict[str, Any]:
         if not auth_header or not auth_header.startswith("Bearer "):
             raise ApiError(HTTPStatus.UNAUTHORIZED, "Missing Bearer token")
@@ -696,6 +700,9 @@ class SmartBistroHandler(SimpleHTTPRequestHandler):
             if path == "/api/auth/login" and method == "POST":
                 body = self.body()
                 return self.json(self.app.login(body.get("email", ""), body.get("password", "")))
+            if path == "/api/auth/logout" and method == "POST":
+                self.app.require_user(self.headers.get("Authorization"))
+                return self.json(self.app.logout())
             if path.startswith("/api/menu/") and method == "GET":
                 return self.json(self.app.menu_for_table(int(path.split("/")[-1])))
             if path == "/api/menu-items" and method == "GET":
