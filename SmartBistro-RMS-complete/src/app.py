@@ -571,7 +571,7 @@ class SmartBistroService:
     def inventory(self) -> dict[str, Any]:
         with self.connect() as conn:
             ingredients = [row_to_dict(row) for row in conn.execute("SELECT * FROM ingredients ORDER BY name")]
-            alerts = [row_to_dict(row) for row in conn.execute("SELECT * FROM alerts ORDER BY id DESC LIMIT 12")]
+            alerts = [row_to_dict(row) for row in conn.execute("SELECT * FROM alerts WHERE acknowledged = 0 ORDER BY id DESC LIMIT 12")]
         for item in ingredients:
             item["low"] = item["stock"] <= item["par"]
         return {"ingredients": ingredients, "alerts": alerts}
@@ -606,6 +606,15 @@ class SmartBistroService:
 
     def create_low_stock_alerts(self, conn: sqlite3.Connection) -> None:
         now = utcnow()
+        
+        # First, acknowledge alerts for ingredients that are now above par
+        for row in conn.execute("SELECT * FROM ingredients WHERE stock > par"):
+            conn.execute(
+                "UPDATE alerts SET acknowledged = 1 WHERE acknowledged = 0 AND message LIKE ?",
+                (f"{row['name']} is at %",)
+            )
+        
+        # Then, create alerts for ingredients that are at or below par
         for row in conn.execute("SELECT * FROM ingredients WHERE stock <= par"):
             message = f"{row['name']} is at {row['stock']:g}{row['unit']} (par {row['par']:g}{row['unit']})"
             exists = conn.execute("SELECT id FROM alerts WHERE acknowledged = 0 AND message = ?", (message,)).fetchone()
