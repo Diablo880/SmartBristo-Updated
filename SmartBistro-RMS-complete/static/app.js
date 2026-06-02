@@ -22,9 +22,27 @@ async function api(path, options = {}) {
 }
 
 function setLoginState() {
-  document.querySelector("#loginState").textContent = state.token
-    ? `Signed in as ${state.role}`
-    : "Guest mode";
+  const logoutBtn = document.querySelector("#logoutBtn");
+  if (state.token) {
+    document.querySelector("#loginState").textContent = `Signed in as ${state.role}`;
+    logoutBtn.style.display = "inline-block";
+    document.querySelector("#loginForm").style.display = "flex";
+  } else {
+    document.querySelector("#loginState").textContent = "Guest mode";
+    logoutBtn.style.display = "none";
+  }
+}
+
+function logout() {
+  state.token = "";
+  state.role = "";
+  localStorage.removeItem("smartbistroToken");
+  localStorage.removeItem("smartbistroRole");
+  setLoginState();
+  activateView("home");
+  state.cart = [];
+  state.menu = [];
+  state.adminMenu = [];
 }
 
 document.querySelector("#loginForm").addEventListener("submit", async event => {
@@ -45,6 +63,8 @@ document.querySelector("#loginForm").addEventListener("submit", async event => {
     alert(error.message);
   }
 });
+
+document.querySelector("#logoutBtn").addEventListener("click", logout);
 
 document.querySelectorAll(".tabs button").forEach(button => {
   button.addEventListener("click", async () => {
